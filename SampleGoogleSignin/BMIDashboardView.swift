@@ -7,6 +7,8 @@
 
 import SwiftUI
 import Charts
+import Auth
+import Supabase
 
 struct BMIDashboardView: View {
     @State private var currentBMI: Double?
