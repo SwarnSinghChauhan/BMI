@@ -67,7 +67,9 @@ struct ProfileView: View {
                             Button(isEditing ? "Cancel" : "Edit") {
                                 if isEditing {
                                     // Cancel - reload original data
-                                    loadProfileData()
+                                    Task {
+                                        await loadProfileData()
+                                    }
                                 }
                                 isEditing.toggle()
                                 errorMessage = nil
