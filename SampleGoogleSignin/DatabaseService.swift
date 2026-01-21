@@ -34,38 +34,34 @@ class DatabaseService {
     
     /// Create or update user profile
     func saveUserProfile(_ profile: UserProfile) async throws {
-        let encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = .iso8601
-        
         var profileData = profile
         profileData.updatedAt = Date()
         
-        let data = try encoder.encode(profileData)
-        let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
-        
         _ = try await supabaseClient
             .from("user_profiles")
-            .upsert(json ?? [:])
+            .upsert(profileData)
             .execute()
     }
     
     /// Update specific profile fields
     func updateProfile(userId: UUID, weight: Double? = nil, height: Double? = nil, gender: String? = nil) async throws {
-        var updates: [String: Any] = ["updated_at": ISO8601DateFormatter().string(from: Date())]
+        struct ProfileUpdate: Encodable {
+            let weight: Double?
+            let height: Double?
+            let gender: String?
+            let updated_at: String
+        }
         
-        if let weight = weight {
-            updates["weight"] = weight
-        }
-        if let height = height {
-            updates["height"] = height
-        }
-        if let gender = gender {
-            updates["gender"] = gender
-        }
+        let update = ProfileUpdate(
+            weight: weight,
+            height: height,
+            gender: gender,
+            updated_at: ISO8601DateFormatter().string(from: Date())
+        )
         
         _ = try await supabaseClient
             .from("user_profiles")
-            .update(updates)
+            .update(update)
             .eq("user_id", value: userId.uuidString)
             .execute()
     }
@@ -74,15 +70,9 @@ class DatabaseService {
     
     /// Add a weight entry
     func addWeightEntry(_ entry: WeightEntry) async throws {
-        let encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = .iso8601
-        
-        let data = try encoder.encode(entry)
-        let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
-        
         _ = try await supabaseClient
             .from("weight_history")
-            .insert(json ?? [:])
+            .insert(entry)
             .execute()
     }
     
@@ -113,15 +103,9 @@ class DatabaseService {
     
     /// Save a BMI record
     func saveBMIRecord(_ record: BMIRecord) async throws {
-        let encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = .iso8601
-        
-        let data = try encoder.encode(record)
-        let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
-        
         _ = try await supabaseClient
             .from("bmi_records")
-            .insert(json ?? [:])
+            .insert(record)
             .execute()
     }
     
