@@ -216,16 +216,30 @@ struct UserDetailsFormView: View {
         isSaving = true
         
         do {
-            let profile = UserProfile(
-                userId: userId,
-                weight: weightValue,
-                height: heightValue,
-                gender: selectedGender.rawValue,
-                weightUnit: selectedWeightUnit.rawValue,
-                heightUnit: selectedHeightUnit.rawValue
-            )
+            // Check if profile already exists
+            let existingProfile = try await DatabaseService.shared.fetchUserProfile(userId: userId)
             
-            try await DatabaseService.shared.saveUserProfile(profile)
+            if existingProfile != nil {
+                // Update existing profile
+                try await DatabaseService.shared.updateProfile(
+                    userId: userId,
+                    weight: weightValue,
+                    height: heightValue,
+                    gender: selectedGender.rawValue
+                )
+            } else {
+                // Create new profile
+                let profile = UserProfile(
+                    userId: userId,
+                    weight: weightValue,
+                    height: heightValue,
+                    gender: selectedGender.rawValue,
+                    weightUnit: selectedWeightUnit.rawValue,
+                    heightUnit: selectedHeightUnit.rawValue
+                )
+                
+                try await DatabaseService.shared.saveUserProfile(profile)
+            }
             
             // Calculate and save BMI
             let bmi = BMICalculator.calculateBMI(

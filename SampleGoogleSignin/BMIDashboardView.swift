@@ -91,6 +91,9 @@ struct BMIDashboardView: View {
                         .cornerRadius(15)
                         .padding(.horizontal)
                         
+                        // Quick BMI Calculator
+                        QuickBMICalculator()
+                        
                         // Weight History Graph
                         if !weightHistory.isEmpty {
                             VStack(alignment: .leading, spacing: 12) {
@@ -301,6 +304,153 @@ struct BMICategoryRow: View {
                 .font(.subheadline)
                 .foregroundColor(.secondary)
         }
+    }
+}
+
+// MARK: - Quick BMI Calculator
+struct QuickBMICalculator: View {
+    @State private var weight: String = ""
+    @State private var height: String = ""
+    @State private var selectedWeightUnit: WeightUnit = .kg
+    @State private var selectedHeightUnit: HeightUnit = .cm
+    @State private var calculatedBMI: Double?
+    @State private var bmiCategory: String = ""
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 15) {
+            HStack {
+                Image(systemName: "calculator")
+                    .foregroundColor(ThemeColors.primaryBrown)
+                Text("Quick BMI Calculator")
+                    .font(.headline)
+                    .foregroundColor(ThemeColors.primaryBrown)
+            }
+            
+            Text("Calculate BMI for anyone without saving")
+                .font(.caption)
+                .foregroundColor(.secondary)
+            
+            Divider()
+            
+            // Weight Input
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Weight")
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                
+                HStack(spacing: 10) {
+                    TextField("Weight", text: $weight)
+                        .textFieldStyle(RoundedTextFieldStyle())
+                        .keyboardType(.decimalPad)
+                    
+                    Picker("Unit", selection: $selectedWeightUnit) {
+                        ForEach(WeightUnit.allCases, id: \.self) { unit in
+                            Text(unit.rawValue).tag(unit)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .frame(width: 100)
+                }
+            }
+            
+            // Height Input
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Height")
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                
+                HStack(spacing: 10) {
+                    TextField("Height", text: $height)
+                        .textFieldStyle(RoundedTextFieldStyle())
+                        .keyboardType(.decimalPad)
+                    
+                    Picker("Unit", selection: $selectedHeightUnit) {
+                        ForEach(HeightUnit.allCases, id: \.self) { unit in
+                            Text(unit.rawValue).tag(unit)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .frame(width: 100)
+                }
+            }
+            
+            // Calculate Button
+            Button {
+                calculateBMI()
+            } label: {
+                HStack {
+                    Image(systemName: "equal.circle.fill")
+                    Text("Calculate")
+                        .fontWeight(.semibold)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(ThemeColors.primaryBrown)
+                .foregroundColor(.white)
+                .cornerRadius(10)
+            }
+            
+            // Result Display
+            if let bmi = calculatedBMI {
+                Divider()
+                
+                VStack(spacing: 10) {
+                    Text("Result")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    
+                    HStack(spacing: 15) {
+                        VStack {
+                            Text("BMI")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            Text(String(format: "%.1f", bmi))
+                                .font(.title)
+                                .fontWeight(.bold)
+                                .foregroundColor(ThemeColors.colorForBMI(category: bmiCategory))
+                        }
+                        
+                        Divider()
+                            .frame(height: 40)
+                        
+                        VStack {
+                            Text("Category")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            Text(bmiCategory)
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+                                .foregroundColor(ThemeColors.colorForBMI(category: bmiCategory))
+                        }
+                    }
+                    .padding(.vertical, 8)
+                }
+            }
+        }
+        .padding()
+        .background(ThemeColors.secondaryBackground)
+        .cornerRadius(15)
+        .padding(.horizontal)
+    }
+    
+    func calculateBMI() {
+        guard let weightValue = Double(weight),
+              let heightValue = Double(height),
+              weightValue > 0,
+              heightValue > 0 else {
+            calculatedBMI = nil
+            return
+        }
+        
+        let bmi = BMICalculator.calculateBMI(
+            weight: weightValue,
+            weightUnit: selectedWeightUnit.rawValue,
+            height: heightValue,
+            heightUnit: selectedHeightUnit.rawValue
+        )
+        
+        calculatedBMI = bmi
+        bmiCategory = BMICalculator.getBMICategory(bmi)
     }
 }
 
