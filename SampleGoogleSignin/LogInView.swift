@@ -63,9 +63,7 @@ struct LogInView: View {
                                 .fontWeight(.medium)
                                 .foregroundColor(ThemeColors.textPrimary)
                             
-                            SecureField("Enter your password", text: $password)
-                                .textFieldStyle(RoundedTextFieldStyle())
-                                .textContentType(.password)
+                            SecureInputView(title: "Enter your password", text: $password)
                         }
                         
                         // Forgot Password
@@ -240,19 +238,7 @@ struct LogInView: View {
     }
 }
 
-// MARK: - Custom Text Field Style
-struct RoundedTextFieldStyle: TextFieldStyle {
-    func _body(configuration: TextField<Self._Label>) -> some View {
-        configuration
-            .padding()
-            .background(ThemeColors.secondaryBackground)
-            .cornerRadius(10)
-            .overlay(
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(ThemeColors.lightBrown, lineWidth: 1)
-            )
-    }
-}
+
 
 #Preview {
     LogInView()

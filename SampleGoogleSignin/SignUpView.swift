@@ -61,9 +61,7 @@ struct SignUpView: View {
                             .fontWeight(.medium)
                             .foregroundColor(ThemeColors.textPrimary)
                         
-                        SecureField("Enter your password", text: $password)
-                            .textFieldStyle(RoundedTextFieldStyle())
-                            .textContentType(.newPassword)
+                        SecureInputView(title: "Enter your password", text: $password, contentType: .newPassword)
                         
                         Text("At least 8 characters with letters and numbers")
                             .font(.caption)
@@ -77,9 +75,7 @@ struct SignUpView: View {
                             .fontWeight(.medium)
                             .foregroundColor(ThemeColors.textPrimary)
                         
-                        SecureField("Confirm your password", text: $confirmPassword)
-                            .textFieldStyle(RoundedTextFieldStyle())
-                            .textContentType(.newPassword)
+                        SecureInputView(title: "Confirm your password", text: $confirmPassword, contentType: .newPassword)
                     }
                     
                     // Error Message

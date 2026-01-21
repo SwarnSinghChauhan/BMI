@@ -48,9 +48,7 @@ struct ChangePasswordView: View {
                                 .fontWeight(.medium)
                                 .foregroundColor(ThemeColors.textPrimary)
                             
-                            SecureField("Enter new password", text: $newPassword)
-                                .textFieldStyle(RoundedTextFieldStyle())
-                                .textContentType(.newPassword)
+                            SecureInputView(title: "Enter new password", text: $newPassword, contentType: .newPassword)
                             
                             Text("At least 8 characters with letters and numbers")
                                 .font(.caption)
@@ -64,9 +62,7 @@ struct ChangePasswordView: View {
                                 .fontWeight(.medium)
                                 .foregroundColor(ThemeColors.textPrimary)
                             
-                            SecureField("Confirm new password", text: $confirmPassword)
-                                .textFieldStyle(RoundedTextFieldStyle())
-                                .textContentType(.newPassword)
+                            SecureInputView(title: "Confirm new password", text: $confirmPassword, contentType: .newPassword)
                         }
                         
                         // Error Message
