@@ -13,7 +13,7 @@ struct AppView: View {
     var body: some View {
         Group {
             if isAuthenticated{
-                HomeView()
+                MainTabView()
             }
             else{
                 LogInView()
@@ -25,7 +25,7 @@ struct AppView: View {
                     isAuthenticated = state.session != nil
                 }
             }
-        } 
+        }
             
         
     }
